@@ -12,12 +12,6 @@
 
 using namespace std;
 
-#if 0
-#define TEXTURE_FILTER GL_NEAREST
-#else
-#define TEXTURE_FILTER GL_LINEAR
-#endif
-
 static const int Width = 3;
 static const int Height = 3;
 
@@ -48,8 +42,8 @@ out vec4 fragColor;
 
 void main()
 {
-	vec2 texCoord = UV + vec2(1.0 / 4194304.0, 1.0 / 4194304.0);
-	//vec2 texCoord = UV + vec2(0, 0);
+	//vec2 texCoord = UV + vec2(1.0 / 4194304.0, 1.0 / 4194304.0);
+	vec2 texCoord = UV + vec2(0, 0);
 	fragColor = texture2D(Texture, texCoord);
 };
 )delim";
@@ -207,7 +201,6 @@ int main()
             EGL_NONE
         }
     );
-    const float TextureBorderColor = 0.0;
     const vector<float> SourceGrid({ 0, 0, 1, 0, 0, 1, 1, 1 });
     const vector<float> TargetGrid({ -1, -1, 1, -1, -1, 1, 1, 1 });
     const vector<GLushort> indexBuffer({ 0, 1, 2, 3, 1, 2 });
@@ -242,6 +235,11 @@ int main()
     gladLoadEGLLoader((GLADloadproc)eglGetProcAddress);
     gladLoadGLES2Loader((GLADloadproc)eglGetProcAddress);
 
+    GLuint Program = LoadShaders(sVertex, sFragment);
+    GLuint LocTextureCoord = glGetAttribLocation(Program, "TextureCoord");
+    GLuint LocClipSpaceCoord = glGetAttribLocation(Program, "ClipSpaceCoord");
+    glUseProgram(Program);
+
     GLuint SourceGridBuffer;
     glGenBuffers(1, &SourceGridBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, SourceGridBuffer);
@@ -253,6 +251,8 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, TargetGrid.size() * sizeof(float), TargetGrid.data(), GL_STATIC_DRAW);
 
     glViewport(0, 0, Width, Height);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     GLuint TargetTexture;
     glGenTextures(1, &TargetTexture);
@@ -263,10 +263,7 @@ int main()
     GLuint Fbo;
     glGenFramebuffers(1, &Fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, Fbo);
-
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TargetTexture, 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     GLuint Vao;
     glGenVertexArrays(1, &Vao);
@@ -277,32 +274,6 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexVertices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexBuffer.size(), indexBuffer.data(), GL_STATIC_DRAW);
 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    GLuint Program = LoadShaders(sVertex, sFragment);
-    GLuint LocTextureCoord = glGetAttribLocation(Program, "TextureCoord");
-    GLuint LocClipSpaceCoord = glGetAttribLocation(Program, "ClipSpaceCoord");
-
-    GLuint SourceTexture;
-    glGenTextures(1, &SourceTexture);
-    glBindTexture(GL_TEXTURE_2D, SourceTexture);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, sourceImage.data());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER);
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR_EXT, &TextureBorderColor);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER_EXT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER_EXT);
-
-    glUseProgram(Program);
-    glBindFramebuffer(GL_FRAMEBUFFER, Fbo);
-    glBindVertexArray(Vao);
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
     glBindBuffer(GL_ARRAY_BUFFER, SourceGridBuffer);
     glVertexAttribPointer(LocTextureCoord, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, TargetGridBuffer);
@@ -311,22 +282,39 @@ int main()
     glEnableVertexAttribArray(LocTextureCoord);
     glEnableVertexAttribArray(LocClipSpaceCoord);
 
+    GLuint SourceTexture;
+    glGenTextures(1, &SourceTexture);
+    glBindTexture(GL_TEXTURE_2D, SourceTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, sourceImage.data());
+
     glDrawElements(GL_TRIANGLES, indexBuffer.size(), GL_UNSIGNED_SHORT, nullptr);
 
-    glDisableVertexAttribArray(LocTextureCoord);
-    glDisableVertexAttribArray(LocClipSpaceCoord);
-    glBindVertexArray(0);
-    glUseProgram(0);
-
     glBindTexture(GL_TEXTURE_2D, TargetTexture);
-    glPixelStorei(GL_PACK_ROW_LENGTH, 0);
-    glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
-    glPixelStorei(GL_PACK_SKIP_ROWS, 0);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    printf("%s\n", sourceImage == targetImage ? "equal" : "different");
+    printf("One-to-one mapping of a %dx%d texture using...\n");
+    printf("......nearest neighbour. Result is %s\n", sourceImage == targetImage ? "EQUAL" : "DIFFERENT");
+
+    glBindTexture(GL_TEXTURE_2D, SourceTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glDrawElements(GL_TRIANGLES, indexBuffer.size(), GL_UNSIGNED_SHORT, nullptr);
+
+    glBindTexture(GL_TEXTURE_2D, TargetTexture);
+    glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    printf("...linear interpolation. Result is %s\n", sourceImage == targetImage ? "EQUAL" : "DIFFERENT");
+
+    glDisableVertexAttribArray(LocTextureCoord);
+    glDisableVertexAttribArray(LocClipSpaceCoord);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glUseProgram(0);
 
     glDeleteVertexArrays(1, &Vao);
     glDeleteFramebuffers(1, &Fbo);

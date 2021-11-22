@@ -1,4 +1,6 @@
 
-.vs
+/ide/.vs
 /ide/bin
 /ide/obj
+/ide/.ninja*
+/ide/build.ninja

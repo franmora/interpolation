@@ -2,10 +2,12 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AdditionalDebuggerCommands>handle SIGHUP  nostop noprint</AdditionalDebuggerCommands>
-    <DebuggerFlavor>LinuxDebugger</DebuggerFlavor>
+    <DebuggerFlavor>LinuxWSLDebugger</DebuggerFlavor>
+    <RemoteDebuggingTarget>1431940955;raspi-home (username=, port=22, authentication=PrivateKey)</RemoteDebuggingTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <AdditionalDebuggerCommands>handle SIGHUP  nostop noprint</AdditionalDebuggerCommands>
-    <DebuggerFlavor>LinuxDebugger</DebuggerFlavor>
+    <DebuggerFlavor>LinuxWSLDebugger</DebuggerFlavor>
+    <RemoteDebuggingTarget>1431940955;raspi-home (username=, port=22, authentication=PrivateKey)</RemoteDebuggingTarget>
   </PropertyGroup>
 </Project>

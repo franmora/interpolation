@@ -53,9 +53,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <UseCompiler>
+    </UseCompiler>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
+    <UseCompiler>
+    </UseCompiler>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -79,14 +85,18 @@
     <IncludePath>/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include/c++/8.3.0;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include/c++/8.3.0/backward;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/lib/gcc/arm-linux-gnueabihf/8.3.0/include;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/libc/usr/include;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/libc/usr/include/libdrm</IncludePath>
     <RemoteCCompileToolExe>arm-linux-gnueabihf-gcc</RemoteCCompileToolExe>
     <RemoteCppCompileToolExe>arm-linux-gnueabihf-gcc</RemoteCppCompileToolExe>
-    <ValidateArchitecture>false</ValidateArchitecture>
+    <ValidateArchitecture>
+    </ValidateArchitecture>
+    <RemoteLdToolExe>arm-linux-gnueabihf-g++</RemoteLdToolExe>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <EnableIncrementalBuild>WithNinja</EnableIncrementalBuild>
     <IncludePath>/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include/c++/8.3.0;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include/c++/8.3.0/backward;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/lib/gcc/arm-linux-gnueabihf/8.3.0/include;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/include;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/libc/usr/include;/home/$(USERNAME)/tools/arm-bcm2708/cross-pi-gcc-8.3.0-2/arm-linux-gnueabihf/libc/usr/include/libdrm</IncludePath>
     <RemoteCCompileToolExe>arm-linux-gnueabihf-gcc</RemoteCCompileToolExe>
     <RemoteCppCompileToolExe>arm-linux-gnueabihf-gcc</RemoteCppCompileToolExe>
-    <ValidateArchitecture>false</ValidateArchitecture>
+    <ValidateArchitecture>
+    </ValidateArchitecture>
+    <RemoteLdToolExe>arm-linux-gnueabihf-g++</RemoteLdToolExe>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="..\glad\src\glad.cpp" />
