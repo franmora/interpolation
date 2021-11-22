@@ -48,67 +48,6 @@ void main()
 };
 )delim";
 
-template <typename T>
-struct vec2
-{
-    union
-    {
-        T x;
-        T r;
-        T s;
-    };
-    union
-    {
-        T y;
-        T g;
-        T t;
-    };
-    vec2() : x(0.0), y(0.0) {}
-    vec2(T _x, T _y) : x(_x), y(_y) {}
-};
-
-template <typename T>
-struct vec4
-{
-    union
-    {
-        T x;
-        T r;
-        T s;
-    };
-    union
-    {
-        T y;
-        T g;
-        T t;
-    };
-    union
-    {
-        T z;
-        T b;
-        T p;
-    };
-    union
-    {
-        T w;
-        T a;
-        T q;
-    };
-    vec4() : x(0.0), y(0.0), z(0.0), w(0.0) {}
-    vec4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
-    bool operator==(const vec4& rhs) const
-    {
-        if (r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-};
-
 static GLint CompileShader(const GLuint shaderID, const string& shaderCode)
 {
     GLint Result = GL_FALSE;
@@ -204,14 +143,14 @@ int main()
     const vector<float> SourceGrid({ 0, 0, 1, 0, 0, 1, 1, 1 });
     const vector<float> TargetGrid({ -1, -1, 1, -1, -1, 1, 1, 1 });
     const vector<GLushort> indexBuffer({ 0, 1, 2, 3, 1, 2 });
-    const vector<vec4<unsigned char>> sourceImage(
+    const vector<unsigned char> sourceImage(
         {
-            { 0, 0, 0, 255 }, { 0, 0, 0, 255 },       { 0, 0, 0, 255 },
-            { 0, 0, 0, 255 }, { 255, 255, 255, 255 }, { 0, 0, 0, 255 },
-            { 0, 0, 0, 255 }, { 0, 0, 0, 255 },       { 0, 0, 0, 255 }
+             0, 0, 0, 255,  0, 0, 0, 255,        0, 0, 0, 255,
+             0, 0, 0, 255,  255, 255, 255, 255,  0, 0, 0, 255,
+             0, 0, 0, 255,  0, 0, 0, 255,        0, 0, 0, 255 
         }
     );
-    vector<vec4<unsigned char>> targetImage(Width * Height);
+    vector<unsigned char> targetImage(4 * Width * Height);
 
     int FileDesc = open("/dev/dri/by-path/platform-gpu-card", O_RDWR);
     struct gbm_device* GbmDevice = gbm_create_device(FileDesc);
@@ -295,7 +234,7 @@ int main()
     glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    printf("One-to-one mapping of a %dx%d texture using...\n");
+    printf("One-to-one mapping of a %dx%d texture using...\n", Width, Height);
     printf("......nearest neighbour. Result is %s\n", sourceImage == targetImage ? "EQUAL" : "DIFFERENT");
 
     glBindTexture(GL_TEXTURE_2D, SourceTexture);
@@ -312,6 +251,7 @@ int main()
 
     glDisableVertexAttribArray(LocTextureCoord);
     glDisableVertexAttribArray(LocClipSpaceCoord);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glUseProgram(0);
