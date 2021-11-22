@@ -171,8 +171,19 @@ int main()
     EGLSurface EglSurface = eglCreateWindowSurface(eglDisplay, configs[configIndex], GbmSurface, NULL);
     eglMakeCurrent(eglDisplay, EglSurface, EglSurface, EglContext);
 
+    printf("**** EGL information ****\n");
+    printf("vendor: \"%s\"\n", eglQueryString(eglDisplay, EGL_VENDOR));
+    printf("version: \"%s\"\n", eglQueryString(eglDisplay, EGL_VERSION));
+    printf("client APIs: \"%s\"\n", eglQueryString(eglDisplay, EGL_CLIENT_APIS));
+
     gladLoadEGLLoader((GLADloadproc)eglGetProcAddress);
     gladLoadGLES2Loader((GLADloadproc)eglGetProcAddress);
+
+    printf("**** OpenGL information ****\n");
+    printf("vendor: \"%s\"\n", glGetString(GL_VENDOR));
+    printf("version: \"%s\"\n", glGetString(GL_VERSION));
+    printf("shading language version: \"%s\"\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    printf("renderer: \"%s\"\n", glGetString(GL_RENDERER));
 
     GLuint Program = LoadShaders(sVertex, sFragment);
     GLuint LocTextureCoord = glGetAttribLocation(Program, "TextureCoord");
@@ -234,7 +245,7 @@ int main()
     glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    printf("One-to-one mapping of a %dx%d texture using...\n", Width, Height);
+    printf("\nOne-to-one mapping of a %dx%d texture using...\n", Width, Height);
     printf("......nearest neighbour. Result is %s\n", sourceImage == targetImage ? "EQUAL" : "DIFFERENT");
 
     glBindTexture(GL_TEXTURE_2D, SourceTexture);
