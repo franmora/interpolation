@@ -101,18 +101,23 @@
   <ItemGroup>
     <ClCompile Include="..\glad\src\glad.cpp" />
     <ClCompile Include="..\glad\src\glad_egl.cpp" />
+    <ClCompile Include="..\LodePNG\src\lodepng.cpp">
+      <CAdditionalWarning Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">switch;no-deprecated-declarations;empty-body;return-type;parentheses;no-pointer-sign;no-format;uninitialized;unreachable-code;unused-function;unused-value;unused-variable;%(CAdditionalWarning)</CAdditionalWarning>
+      <CAdditionalWarning Condition="'$(Configuration)|$(Platform)'=='Release|x86'">switch;no-deprecated-declarations;empty-body;return-type;parentheses;no-pointer-sign;no-format;uninitialized;unreachable-code;unused-function;unused-value;unused-variable;%(CAdditionalWarning)</CAdditionalWarning>
+    </ClCompile>
     <ClCompile Include="..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\glad\include\glad\glad.h" />
     <ClInclude Include="..\glad\include\glad\glad_egl.h" />
     <ClInclude Include="..\glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="..\LodePNG\include\lodepng.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
       <CppLanguageStandard>c++17</CppLanguageStandard>
       <AdditionalOptions>-Wno-psabi</AdditionalOptions>
-      <AdditionalIncludeDirectories>../glad/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../glad/include;../LodePNG/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Verbose>true</Verbose>
     </ClCompile>
     <Link>
@@ -126,7 +131,7 @@
     <ClCompile>
       <CppLanguageStandard>c++17</CppLanguageStandard>
       <AdditionalOptions>-Wno-psabi</AdditionalOptions>
-      <AdditionalIncludeDirectories>../glad/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../glad/include;../LodePNG/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Verbose>true</Verbose>
     </ClCompile>
     <Link>

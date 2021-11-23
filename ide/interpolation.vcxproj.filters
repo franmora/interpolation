@@ -4,6 +4,9 @@
     <Filter Include="glad">
       <UniqueIdentifier>{b7382ad9-d73a-4c69-b63d-d6e8b7a01af9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LodePNG">
+      <UniqueIdentifier>{768a046a-5212-4380-b7f4-e9dd7cfae685}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
@@ -12,6 +15,9 @@
     </ClCompile>
     <ClCompile Include="..\glad\src\glad_egl.cpp">
       <Filter>glad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LodePNG\src\lodepng.cpp">
+      <Filter>LodePNG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +29,9 @@
     </ClInclude>
     <ClInclude Include="..\glad\include\KHR\khrplatform.h">
       <Filter>glad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LodePNG\include\lodepng.h">
+      <Filter>LodePNG</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
