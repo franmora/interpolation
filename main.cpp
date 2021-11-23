@@ -10,7 +10,7 @@
 #include "glad/glad.h"
 #include "glad/glad_egl.h"
 
-#define WITH_PNG 1
+#define WITH_PNG 0
 
 #if WITH_PNG==1
 #include "lodepng.h"
