@@ -4,3 +4,8 @@
 /ide/obj
 /ide/.ninja*
 /ide/build.ninja
+
+*.png
+*.o
+/interpolation
+/bin

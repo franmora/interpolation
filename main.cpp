@@ -10,9 +10,7 @@
 #include "glad/glad.h"
 #include "glad/glad_egl.h"
 
-#define WITH_PNG 0
-
-#if WITH_PNG==1
+#ifdef WITH_PNG
 #include "lodepng.h"
 #endif
 
@@ -245,7 +243,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, sourceImage.data());
 
-#if WITH_PNG==1
+#ifdef WITH_PNG
     lodepng_encode32_file("SourceTexture.png", (unsigned char*)sourceImage.data(), Width, Height);
 #endif
 
@@ -255,7 +253,7 @@ int main()
     glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
-#if WITH_PNG==1
+#ifdef WITH_PNG
     lodepng_encode32_file("TargetTexture-Nearest.png", (unsigned char*)targetImage.data(), Width, Height);
 #endif
 
@@ -272,7 +270,7 @@ int main()
     glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
-#if WITH_PNG==1
+#ifdef WITH_PNG
     lodepng_encode32_file("TargetTexture-Linear.png", (unsigned char*)targetImage.data(), Width, Height);
 #endif
 
