@@ -125,6 +125,13 @@ int MatchConfig2Visual(EGLDisplay egl_display, EGLint visual_id, EGLConfig* conf
     return -1;
 }
 
+static void APIENTRY funcname(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+    printf("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type, severity, message);
+}
+
 int main()
 {
     const vector<EGLint> EglConfigAttributes(
@@ -147,14 +154,14 @@ int main()
     const vector<float> SourceGrid({ 0, 0, 1, 0, 0, 1, 1, 1 });
     const vector<float> TargetGrid({ -1, -1, 1, -1, -1, 1, 1, 1 });
     const vector<GLushort> indexBuffer({ 0, 1, 2, 3, 1, 2 });
-    const vector<unsigned char> sourceImage(
+    const vector<GLfloat> sourceImage(
         {
-             0, 0, 0, 255,  0, 0, 0, 255,        0, 0, 0, 255,
-             0, 0, 0, 255,  255, 255, 255, 255,  0, 0, 0, 255,
-             0, 0, 0, 255,  0, 0, 0, 255,        0, 0, 0, 255 
+             0, 0, 0, -1,  0, 0, 0, -1,     0, 0, 0, -1,
+             0, 0, 0, -1,  -1, -1, -1, -1,  0, 0, 0, -1,
+             0, 0, 0, -1,  0, 0, 0, -1,     0, 0, 0, -1
         }
     );
-    vector<unsigned char> targetImage(4 * Width * Height);
+    vector<GLfloat> targetImage(4 * Width * Height);
 
     int FileDesc = open("/dev/dri/by-path/platform-gpu-card", O_RDWR);
     struct gbm_device* GbmDevice = gbm_create_device(FileDesc);
@@ -189,6 +196,10 @@ int main()
     printf("shading language version: \"%s\"\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
     printf("renderer: \"%s\"\n", glGetString(GL_RENDERER));
 
+    glDebugMessageCallback(funcname, nullptr);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glEnable(GL_DEBUG_OUTPUT);
+
     GLuint Program = LoadShaders(sVertex, sFragment);
     GLuint LocTextureCoord = glGetAttribLocation(Program, "TextureCoord");
     GLuint LocClipSpaceCoord = glGetAttribLocation(Program, "ClipSpaceCoord");
@@ -211,7 +222,7 @@ int main()
     GLuint TargetTexture;
     glGenTextures(1, &TargetTexture);
     glBindTexture(GL_TEXTURE_2D, TargetTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, Width, Height, 0, GL_RGBA, GL_FLOAT, nullptr);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     GLuint Fbo;
@@ -241,7 +252,7 @@ int main()
     glBindTexture(GL_TEXTURE_2D, SourceTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, sourceImage.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, Width, Height, 0, GL_RGBA, GL_FLOAT, sourceImage.data());
 
 #ifdef WITH_PNG
     lodepng_encode32_file("SourceTexture.png", (unsigned char*)sourceImage.data(), Width, Height);
@@ -250,7 +261,11 @@ int main()
     glDrawElements(GL_TRIANGLES, indexBuffer.size(), GL_UNSIGNED_SHORT, nullptr);
 
     glBindTexture(GL_TEXTURE_2D, TargetTexture);
-    glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
+    glReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, targetImage.data());
+    /*GLint readFormat, readType;
+    glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT, &readFormat);
+    glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &readType);
+    printf("0x%04x 0x%04x\n", readFormat, readType);*/
     glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef WITH_PNG
@@ -267,7 +282,7 @@ int main()
     glDrawElements(GL_TRIANGLES, indexBuffer.size(), GL_UNSIGNED_SHORT, nullptr);
 
     glBindTexture(GL_TEXTURE_2D, TargetTexture);
-    glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, targetImage.data());
+    glReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, targetImage.data());
     glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef WITH_PNG
